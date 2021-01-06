@@ -13,7 +13,7 @@ import (
 type Block struct {
 	Id           uuid.UUID
 	timestamp    time.Time
-	data         string
+	Transactions TransactionList
 	Hash         string
 	PreviousHash string
 	nonce        int
@@ -22,20 +22,20 @@ type Block struct {
 var initNonce = 0
 
 // NewBlock instantiates a new Block which can then be added to an existing BlockChain.
-func NewBlock(d string) Block {
+func NewBlock(t TransactionList) Block {
 	return Block{
-		Id:        uuid.New(),
-		timestamp: time.Now(),
-		data:      d,
-		Hash:      CalculateHash(d, time.Now(), initNonce),
-		nonce:     initNonce,
+		Id:           uuid.New(),
+		timestamp:    time.Now(),
+		Transactions: t,
+		Hash:         CalculateHash(t, time.Now(), initNonce),
+		nonce:        initNonce,
 	}
 }
 
 // CalculateHash calculates Hash string value of data, a timestamp and a nonce value.
-func CalculateHash(d string, t time.Time, nonce int) string {
+func CalculateHash(tx TransactionList, t time.Time, nonce int) string {
 	h := sha256.New()
-	h.Write([]byte(d + t.String() + string(rune(nonce))))
+	h.Write([]byte(tx.String() + t.String() + string(rune(nonce))))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
@@ -43,12 +43,12 @@ func CalculateHash(d string, t time.Time, nonce int) string {
 func (b *Block) MineBlock(d int) {
 	for b.Hash[:d] != strings.Repeat("0", d) {
 		b.nonce++
-		b.Hash = CalculateHash(b.data, b.timestamp, b.nonce)
+		b.Hash = CalculateHash(b.Transactions, b.timestamp, b.nonce)
 	}
 }
 
 func (b Block) ReCalculateHash() string {
-	return CalculateHash(b.data, b.timestamp, b.nonce)
+	return CalculateHash(b.Transactions, b.timestamp, b.nonce)
 }
 
 // String outputs a Block in JSON string format.
