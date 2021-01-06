@@ -9,6 +9,7 @@ type Transaction struct {
 	Amount      float64
 }
 
+// TransactionList used to process Transactions in a BlockChain
 type TransactionList []Transaction
 
 // NewTransaction instantiates a new transaction to be mined in the BlockChain
