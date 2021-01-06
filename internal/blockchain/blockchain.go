@@ -6,20 +6,23 @@ import (
 
 // BlockChain object to be instantiated and to have Blocks appended to its Genesis Block
 type BlockChain struct {
-	Name   string
-	Chain  []Block
-	Length int
+	Name       string
+	Chain      []Block
+	Length     int
+	Difficulty int
 }
 
 // NewBlockChain instantiates a new BlockChain to be used. Can append existing Blocks to it.
-func NewBlockChain(n string) BlockChain {
+func NewBlockChain(n string, d int) BlockChain {
 	bc := make([]Block, 0)
-	bc = append(bc, createGenesisBlock())
+	genesis := NewBlock("genesis")
+	bc = append(bc, genesis)
 
 	return BlockChain{
-		Name:   n,
-		Chain:  bc,
-		Length: 1,
+		Name:       n,
+		Chain:      bc,
+		Length:     1,
+		Difficulty: d,
 	}
 }
 
@@ -30,6 +33,8 @@ func (bc BlockChain) GetLatestBlock() Block {
 
 // AppendBlock adds the Block at the end of the BlockChain.
 func (bc *BlockChain) AppendBlock(b Block) {
+	b.PreviousHash = bc.GetLatestBlock().Hash
+	b.MineBlock(bc.Difficulty)
 	bc.Chain = append(bc.Chain, b)
 	bc.Length++
 }
@@ -51,6 +56,9 @@ func (bc BlockChain) Verify() bool {
 	for i := len(bc.Chain) - 2; i >= 0; i-- {
 		currentBlock := bc.Chain[i]
 		lastBlock := bc.Chain[i+1]
+		if currentBlock.Hash != currentBlock.ReCalculateHash() {
+			return false
+		}
 		if currentBlock.Hash != lastBlock.PreviousHash {
 			return false
 		}
