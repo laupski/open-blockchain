@@ -19,8 +19,6 @@ type Block struct {
 	nonce        int
 }
 
-type CalculatedHash string
-
 var initNonce = 0
 
 // NewBlock instantiates a new Block which can then be added to an existing BlockChain.
