@@ -16,14 +16,13 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO - placeholders for now until persistence
 		fmt.Println("Creating Blockchain")
-		bc := blockchain.NewBlockChain("MyBlockchain")
-		fmt.Println(bc)
+		bc := blockchain.NewBlockChain("MyBlockchain", 4)
 
-		bc.AppendBlock(blockchain.NewBlock("2nd Block", bc.GetLatestBlock().Hash))
-		bc.AppendBlock(blockchain.NewBlock("3rd Block", bc.GetLatestBlock().Hash))
-		bc.AppendBlock(blockchain.NewBlock("4th Block", bc.GetLatestBlock().Hash))
-		fmt.Println(bc)
+		bc.AppendBlock(blockchain.NewBlock("2nd"))
+		bc.AppendBlock(blockchain.NewBlock("3rd"))
+		bc.AppendBlock(blockchain.NewBlock("4th"))
 
+		fmt.Println(bc)
 		fmt.Println("Verifying Blockchain")
 		fmt.Println(bc.Verify())
 	},
