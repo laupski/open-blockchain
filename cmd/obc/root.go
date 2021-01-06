@@ -16,15 +16,40 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO - placeholders for now until persistence
 		fmt.Println("Creating Blockchain")
-		bc := blockchain.NewBlockChain("MyBlockchain", 4)
+		bc := blockchain.NewBlockChain(4, 100)
 
-		bc.AppendBlock(blockchain.NewBlock("2nd"))
-		bc.AppendBlock(blockchain.NewBlock("3rd"))
-		bc.AppendBlock(blockchain.NewBlock("4th"))
+		txl := make(blockchain.TransactionList, 0)
+		txl = append(txl, blockchain.NewTransaction("address 1", "address 2", 100))
+		txl = append(txl, blockchain.NewTransaction("address 1", "address 3", 50))
+		txl = append(txl, blockchain.NewTransaction("address 1", "address 4", 30))
+		txl = append(txl, blockchain.NewTransaction("address 1", "address 5", 20))
+
+		bc.PushTransactions(txl...)
+		bc.MineTransactions("home")
+
+		fmt.Printf("Balance of %v: %v\n", "address 1", bc.GetBalance("address 1"))
+		fmt.Printf("Balance of %v: %v\n", "address 2", bc.GetBalance("address 2"))
+		fmt.Printf("Balance of %v: %v\n", "address 3", bc.GetBalance("address 3"))
+		fmt.Printf("Balance of %v: %v\n", "address 4", bc.GetBalance("address 4"))
+		fmt.Printf("Balance of %v: %v\n", "address 5", bc.GetBalance("address 5"))
+		fmt.Printf("Balance of %v: %v\n", "home", bc.GetBalance("home"))
 
 		fmt.Println(bc)
 		fmt.Println("Verifying Blockchain")
 		fmt.Println(bc.Verify())
+
+		txl = blockchain.TransactionList{blockchain.NewTransaction("address 1", "home", 100)}
+		bc.PushTransactions(txl...)
+		bc.MineTransactions("home")
+
+		fmt.Println()
+		fmt.Printf("Balance of %v: %v\n", "home", bc.GetBalance("home"))
+		fmt.Printf("Balance of %v: %v\n", "address 1", bc.GetBalance("address 1"))
+		fmt.Println(bc)
+		fmt.Println("Verifying Blockchain")
+		fmt.Println(bc.Verify())
+
+		// TODO write GetAllBalances()
 	},
 }
 
