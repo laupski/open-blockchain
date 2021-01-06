@@ -47,6 +47,7 @@ func (b *Block) MineBlock(d int) {
 	}
 }
 
+// ReCalculateHash is used for under the Verify function. Used for checking stored vs actual hashes.
 func (b Block) ReCalculateHash() string {
 	return CalculateHash(b.Transactions, b.timestamp, b.nonce)
 }
