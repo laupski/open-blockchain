@@ -29,6 +29,7 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// Execute runs the command line input.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
