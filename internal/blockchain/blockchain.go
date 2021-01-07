@@ -1,7 +1,10 @@
 package blockchain
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 )
 
 // BlockChain object to be instantiated and to have Blocks appended to its Genesis Block
@@ -33,30 +36,39 @@ func (bc BlockChain) GetLatestBlock() Block {
 }
 
 // MineTransactions mines current pending Transactions on the BlockChain
-func (bc *BlockChain) MineTransactions(address string) {
+func (bc *BlockChain) MineTransactions(address []byte) {
 	b := NewBlock(bc.PendingTransactions)
 	b.PreviousHash = bc.GetLatestBlock().Hash
 	b.MineBlock(bc.Difficulty)
 	bc.Chain = append(bc.Chain, b)
 
 	// Reward the address who mined the transaction
-	bc.PendingTransactions = TransactionList{NewTransaction("", address, bc.MiningReward)}
+	bc.PendingTransactions = TransactionList{NewTransaction(nil, address, bc.MiningReward)}
 }
 
 // PushTransactions to the BlockChain, use MineTransactions to process them.
-func (bc *BlockChain) PushTransactions(tx ...Transaction) {
+func (bc *BlockChain) PushTransactions(tx ...Transaction) error {
+	for _, t := range tx {
+		if t.FromAddress == nil || t.ToAddress == nil {
+			return errors.New("must include to and from address")
+		}
+		if !t.VerifyTransaction() {
+			return errors.New("unverified transaction")
+		}
+	}
 	bc.PendingTransactions = append(bc.PendingTransactions, tx...)
+	return nil
 }
 
 // GetBalance retrieves the address' current balance from Genesis Block -> last Block
-func (bc *BlockChain) GetBalance(address string) float64 {
+func (bc *BlockChain) GetBalance(address []byte) float64 {
 	balance := 0.00
 
 	for _, b := range bc.Chain {
 		for _, t := range b.Transactions {
-			if t.FromAddress == address && t.ToAddress != address {
+			if bytes.Equal(t.FromAddress, address) && !bytes.Equal(t.ToAddress, address) {
 				balance -= t.Amount
-			} else if t.ToAddress == address && t.FromAddress != address {
+			} else if bytes.Equal(t.ToAddress, address) && !bytes.Equal(t.FromAddress, address) {
 				balance += t.Amount
 			}
 		}
@@ -65,9 +77,28 @@ func (bc *BlockChain) GetBalance(address string) float64 {
 	return balance
 }
 
+// GetAllBalances in the BlockChain from Genesis.
+func (bc *BlockChain) GetAllBalances() string {
+	balances := make(map[string]float64)
+
+	for _, b := range bc.Chain {
+		for _, t := range b.Transactions {
+			if t.FromAddress == nil {
+				balances["Mining rewards awarded"] -= t.Amount
+			} else {
+				balances[base64.StdEncoding.EncodeToString(t.FromAddress)] -= t.Amount
+			}
+			balances[base64.StdEncoding.EncodeToString(t.ToAddress)] += t.Amount
+		}
+	}
+
+	j, _ := json.MarshalIndent(balances, "", "    ")
+	return string(j)
+}
+
 // String outputs the BlockChain and its underlying Blocks in JSON string format.
 func (bc BlockChain) String() string {
-	s, err := json.Marshal(bc)
+	s, err := json.MarshalIndent(bc, "", "    ")
 	_ = err
 	return string(s)
 }
@@ -82,10 +113,13 @@ func (bc BlockChain) Verify() bool {
 	for i := len(bc.Chain) - 2; i >= 0; i-- {
 		currentBlock := bc.Chain[i]
 		lastBlock := bc.Chain[i+1]
-		if currentBlock.Hash != currentBlock.ReCalculateHash() {
+		if !bytes.Equal(currentBlock.Hash, currentBlock.ReCalculateHash()) {
 			return false
 		}
-		if currentBlock.Hash != lastBlock.PreviousHash {
+		if !bytes.Equal(currentBlock.Hash, lastBlock.PreviousHash) {
+			return false
+		}
+		if !currentBlock.CheckTransactions() {
 			return false
 		}
 	}
