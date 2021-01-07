@@ -6,9 +6,9 @@ Simple proof of concept for blockchain technology written in Go.
 * `gcc` installed 
 
 ## Installation
-Install `go`: 
+Install `go`: https://golang.org/doc/install
 
-To install `gcc` on Windows: https://golang.org/doc/install
+To install `gcc` on Windows: 
 ```
 choco install mingw
 # verify installation
