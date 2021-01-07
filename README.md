@@ -25,10 +25,10 @@ gcc --version
 ```
 
 ## Build 
-`go build -o obc`
+`go build`
 
 ## Run
-`obc`
+`./open-blockchain`
 
 ## Future Features
 * Persistence
