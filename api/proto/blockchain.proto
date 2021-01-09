@@ -8,12 +8,6 @@ service Blockchain {
   rpc GetBlockchain(GetBlockchainRequest) returns (GetBlockchainResponse) {}
 }
 
-message GetBlockchainRequest {}
-
-message GetBlockchainResponse {
-  BlockChain blockchain = 1;
-}
-
 message BlockChain {
   repeated Block blocks = 1;
   int32 difficulty = 2;
@@ -33,3 +27,19 @@ message Transaction {
   float amount = 3;
   string signature = 4;
 }
+
+message GetBlockchainRequest {}
+
+message GetBlockchainResponse {
+  BlockChain blockchain = 1;
+}
+
+message SendTransactionRequest {
+  Transaction transaction = 1;
+}
+
+message SendTransactionResponse {}
+
+message MineBlockRequest {}
+
+message MineBlockResponse {}
