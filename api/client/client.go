@@ -13,7 +13,8 @@ var client proto.BlockchainClient
 func RunClient() {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("cannot diel server: %v", err)
+		log.Fatalf("cannot dial server: %v", err)
+		return
 	}
 
 	client = proto.NewBlockchainClient(conn)

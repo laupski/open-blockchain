@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"github.com/laupski/open-blockchain/api/proto"
 	"github.com/laupski/open-blockchain/internal/blockchain"
@@ -36,29 +37,30 @@ func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchain
 	resp := new(proto.GetBlockchainResponse)
 
 
-	resp.Blockchain.Difficulty = s.Blockchain.Difficulty
-	resp.Blockchain.MiningReward = s.Blockchain.MiningReward
-	/*
+	resp.Blockchain = &proto.BlockChain{
+		Difficulty: s.Blockchain.Difficulty,
+		MiningReward: s.Blockchain.MiningReward,
+	}
+
 	for _, b := range s.Blockchain.Chain {
 		resp.Blockchain.Blocks = append(resp.Blockchain.Blocks, &proto.Block{
-			Hash: string(b.Hash),
-			PrevHash: string(b.PreviousHash),
+			Hash: base64.StdEncoding.EncodeToString(b.Hash),
+			PrevHash: base64.StdEncoding.EncodeToString(b.PreviousHash),
 		})
-		//????????
-
+		/*
 		for _, t := range b.Transactions {
 
-		}
+		}*/
 	}
 
 	for _, t := range s.Blockchain.PendingTransactions {
 		resp.Blockchain.PendingTransactions = append(resp.Blockchain.PendingTransactions, &proto.Transaction{
-			FromAddress: string(t.FromAddress),
-			ToAddress: string(t.ToAddress),
+			FromAddress: base64.StdEncoding.EncodeToString(t.FromAddress),
+			ToAddress: base64.StdEncoding.EncodeToString(t.ToAddress),
 			Amount: t.Amount,
-			Signature: string(t.Signature),
+			Signature: base64.StdEncoding.EncodeToString(t.Signature),
 		})
-	}*/
+	}
 
 	return resp, nil
 }
