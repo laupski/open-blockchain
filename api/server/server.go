@@ -36,21 +36,26 @@ type server struct {
 func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchainRequest) (*proto.GetBlockchainResponse, error) {
 	resp := new(proto.GetBlockchainResponse)
 
-
 	resp.Blockchain = &proto.BlockChain{
 		Difficulty: s.Blockchain.Difficulty,
 		MiningReward: s.Blockchain.MiningReward,
 	}
 
 	for _, b := range s.Blockchain.Chain {
+		transaction := new(proto.Transaction)
+		var tl []*proto.Transaction
+		for _, t := range b.Transactions {
+			transaction.Signature = base64.StdEncoding.EncodeToString(t.Signature)
+			transaction.Amount = t.Amount
+			transaction.ToAddress = base64.StdEncoding.EncodeToString(t.ToAddress)
+			transaction.FromAddress = base64.StdEncoding.EncodeToString(t.FromAddress)
+			tl = append(tl, transaction)
+		}
 		resp.Blockchain.Blocks = append(resp.Blockchain.Blocks, &proto.Block{
 			Hash: base64.StdEncoding.EncodeToString(b.Hash),
 			PrevHash: base64.StdEncoding.EncodeToString(b.PreviousHash),
+			Transactions: tl,
 		})
-		/*
-		for _, t := range b.Transactions {
-
-		}*/
 	}
 
 	for _, t := range s.Blockchain.PendingTransactions {
