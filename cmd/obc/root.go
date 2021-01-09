@@ -89,6 +89,8 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(serverCmd)
+	rootCmd.AddCommand(clientCmd)
 }
 
 // Execute runs the command line input.

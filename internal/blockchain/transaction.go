@@ -14,7 +14,7 @@ import (
 type Transaction struct {
 	FromAddress []byte
 	ToAddress   []byte
-	Amount      float64
+	Amount      float32
 	Signature   []byte
 }
 
@@ -22,7 +22,7 @@ type Transaction struct {
 type TransactionList []Transaction
 
 // NewTransaction instantiates a new transaction to be mined in the BlockChain
-func NewTransaction(f, t []byte, a float64) Transaction {
+func NewTransaction(f, t []byte, a float32) Transaction {
 	return Transaction{
 		FromAddress: f,
 		ToAddress:   t,

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/laupski/open-blockchain;proto";
+
+service Blockchain {
+  rpc GetBlockchain(GetBlockchainRequest) returns (GetBlockchainResponse) {}
+}
+
+message GetBlockchainRequest {}
+
+message GetBlockchainResponse {
+  BlockChain blockchain = 1;
+}
+
+message BlockChain {
+  repeated Block blocks = 1;
+  int32 difficulty = 2;
+  repeated Transaction pendingTransactions = 3;
+  float miningReward = 4;
+}
+
+message Block {
+  repeated Transaction transactions = 1;
+  string hash = 2;
+  string prevHash = 3;
+}
+
+message Transaction {
+  string fromAddress = 1;
+  string toAddress = 2;
+  float amount = 3;
+  string signature = 4;
+}
