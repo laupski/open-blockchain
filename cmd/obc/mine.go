@@ -22,4 +22,3 @@ var mineCmd = &cobra.Command{
 		}
 	},
 }
-

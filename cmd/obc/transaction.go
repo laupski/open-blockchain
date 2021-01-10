@@ -22,7 +22,7 @@ func init() {
 	transactionCmd.AddCommand(verifyTransactionCmd)
 
 	createTransactionCmd.Flags().StringVarP(&ToAddress, "toAddress", "t", "", "The address to send the amount (public key)")
-	createTransactionCmd.Flags().Float32VarP(&Amount,"amount", "a", 0,"Amount to send to the address")
+	createTransactionCmd.Flags().Float32VarP(&Amount, "amount", "a", 0, "Amount to send to the address")
 	createTransactionCmd.Flags().StringVarP(&Key, "key", "k", "", "The key to sign the transaction with")
 	_ = createTransactionCmd.MarkFlagRequired("toAddress")
 	_ = createTransactionCmd.MarkFlagRequired("amount")
@@ -39,7 +39,7 @@ var createTransactionCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create transactions to send the blockchain server.",
 	Run: func(cmd *cobra.Command, args []string) {
-		key,err := blockchain.LoadKey(Key)
+		key, err := blockchain.LoadKey(Key)
 		if err != nil {
 			fmt.Printf("unable to load the key: %v", err)
 		}

@@ -18,7 +18,7 @@ type Key struct {
 func NewKey(n string) (*Key, error) {
 
 	// Only accept keys with the .key extension
-	if n[len(n) - 4:] != ".key" {
+	if n[len(n)-4:] != ".key" {
 		return nil, errors.New("only accepting .key extension")
 	}
 
@@ -56,7 +56,7 @@ func (k *Key) Delete() error {
 
 func LoadKey(n string) (*Key, error) {
 	// Only accept keys with the .key extension
-	if n[len(n) - 4:] != ".key" {
+	if n[len(n)-4:] != ".key" {
 		return nil, errors.New("only accepting .key extension")
 	}
 
@@ -71,7 +71,7 @@ func LoadKey(n string) (*Key, error) {
 	}
 }
 
-func PrintPublicAddress(k string) (string,error) {
+func PrintPublicAddress(k string) (string, error) {
 	key, err := LoadKey(k)
 	if err != nil {
 		return "", err

@@ -93,14 +93,14 @@ func (t Transaction) SaveTransactionToJSON() error {
 		return err
 	}
 
-	err = ioutil.WriteFile("transaction.json",j,0644)
+	err = ioutil.WriteFile("transaction.json", j, 0644)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func ReadTransactionFromJSON() (*Transaction,error) {
+func ReadTransactionFromJSON() (*Transaction, error) {
 	jsonFile, err := os.Open("transaction.json")
 	if err != nil {
 		return nil, err
