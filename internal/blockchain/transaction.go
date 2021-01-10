@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/crypto"
+	"io/ioutil"
+	"os"
 )
 
 // Transaction type to be used within a Block inside the BlockChain
@@ -83,4 +85,36 @@ func (t Transaction) String() string {
 func (tx TransactionList) String() string {
 	s, _ := json.MarshalIndent(tx, "", "    ")
 	return string(s)
+}
+
+func (t Transaction) SaveTransactionToJSON() error {
+	j, err := json.MarshalIndent(t, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile("transaction.json",j,0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ReadTransactionFromJSON() (*Transaction,error) {
+	jsonFile, err := os.Open("transaction.json")
+	if err != nil {
+		return nil, err
+	}
+
+	defer jsonFile.Close()
+
+	j, err := ioutil.ReadAll(jsonFile)
+	var t Transaction
+
+	err = json.Unmarshal(j, &t)
+	if err != nil {
+		return nil, err
+	}
+
+	return &t, nil
 }

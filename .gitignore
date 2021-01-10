@@ -131,3 +131,4 @@ fabric.properties
 /.idea
 open-blockchain
 *.key
+transaction.json

@@ -1,9 +1,9 @@
 package obc
 
 import (
+	"fmt"
 	"github.com/laupski/open-blockchain/internal/blockchain"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var keyCmd = &cobra.Command{
@@ -12,7 +12,7 @@ var keyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		_, err := blockchain.NewKey(args[0])
 		if err != nil {
-			log.Fatalf("unable to create key: %v", err)
+			fmt.Printf("unable to create key: %v", err)
 		}
 	},
 }
