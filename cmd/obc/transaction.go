@@ -103,9 +103,9 @@ var verifyTransactionCmd = &cobra.Command{
 
 		b := t.VerifyTransaction()
 		if b == true {
-			fmt.Printf("transaction is verified!")
+			fmt.Printf("transaction is verified!\n")
 		} else {
-			fmt.Printf("transaction is NOT verified")
+			fmt.Printf("transaction is NOT verified\n")
 		}
 	},
 }
