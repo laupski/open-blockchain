@@ -33,7 +33,5 @@ gcc --version
 ## Future Features
 * Persistence
 * P2P
-* CLI
-* API
 * Dockerize
 * UI
