@@ -10,19 +10,19 @@ import (
 // BlockChain object to be instantiated and to have Blocks appended to its Genesis Block
 type BlockChain struct {
 	Chain               []Block
-	Difficulty          int
+	Difficulty          int32
 	PendingTransactions TransactionList
-	MiningReward        float64
+	MiningReward        float32
 }
 
 // NewBlockChain instantiates a new BlockChain to be used. Can append existing Blocks to it.
-func NewBlockChain(d int, mr float64) BlockChain {
+func NewBlockChain(d int32, mr float32) *BlockChain {
 	bc := make([]Block, 0)
 	txl := TransactionList{}
 	genesis := NewBlock(txl)
 	bc = append(bc, genesis)
 
-	return BlockChain{
+	return &BlockChain{
 		Chain:               bc,
 		Difficulty:          d,
 		PendingTransactions: txl,
@@ -61,8 +61,8 @@ func (bc *BlockChain) PushTransactions(tx ...Transaction) error {
 }
 
 // GetBalance retrieves the address' current balance from Genesis Block -> last Block
-func (bc *BlockChain) GetBalance(address []byte) float64 {
-	balance := 0.00
+func (bc *BlockChain) GetBalance(address []byte) float32 {
+	balance := float32(0.00)
 
 	for _, b := range bc.Chain {
 		for _, t := range b.Transactions {
@@ -79,7 +79,7 @@ func (bc *BlockChain) GetBalance(address []byte) float64 {
 
 // GetAllBalances in the BlockChain from Genesis.
 func (bc *BlockChain) GetAllBalances() string {
-	balances := make(map[string]float64)
+	balances := make(map[string]float32)
 
 	for _, b := range bc.Chain {
 		for _, t := range b.Transactions {

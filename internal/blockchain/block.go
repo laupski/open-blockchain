@@ -43,8 +43,8 @@ func CalculateHash(data string) []byte {
 }
 
 // MineBlock recalculates the Hash to establish proof of work.
-func (b *Block) MineBlock(d int) {
-	for fmt.Sprintf("%x", b.Hash)[:d] != strings.Repeat("0", d) {
+func (b *Block) MineBlock(d int32) {
+	for fmt.Sprintf("%x", b.Hash)[:d] != strings.Repeat("0", int(d)) {
 		b.nonce++
 		b.Hash = CalculateHash(b.Transactions.String() + b.timestamp.String() + string(rune(b.nonce)))
 	}

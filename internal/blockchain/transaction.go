@@ -8,13 +8,15 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ethereum/go-ethereum/crypto"
+	"io/ioutil"
+	"os"
 )
 
 // Transaction type to be used within a Block inside the BlockChain
 type Transaction struct {
 	FromAddress []byte
 	ToAddress   []byte
-	Amount      float64
+	Amount      float32
 	Signature   []byte
 }
 
@@ -22,7 +24,7 @@ type Transaction struct {
 type TransactionList []Transaction
 
 // NewTransaction instantiates a new transaction to be mined in the BlockChain
-func NewTransaction(f, t []byte, a float64) Transaction {
+func NewTransaction(f, t []byte, a float32) Transaction {
 	return Transaction{
 		FromAddress: f,
 		ToAddress:   t,
@@ -83,4 +85,38 @@ func (t Transaction) String() string {
 func (tx TransactionList) String() string {
 	s, _ := json.MarshalIndent(tx, "", "    ")
 	return string(s)
+}
+
+// SaveTransactionToJSON saves a Transaction to the working directory named transaction.json. Only 1 Transaction can be saved.
+func (t Transaction) SaveTransactionToJSON() error {
+	j, err := json.MarshalIndent(t, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile("transaction.json", j, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ReadTransactionFromJSON reads a Transaction from the working directory in transaciotn.json and loads it into memory.
+func ReadTransactionFromJSON() (*Transaction, error) {
+	jsonFile, err := os.Open("transaction.json")
+	if err != nil {
+		return nil, err
+	}
+
+	defer jsonFile.Close()
+
+	j, err := ioutil.ReadAll(jsonFile)
+	var t Transaction
+
+	err = json.Unmarshal(j, &t)
+	if err != nil {
+		return nil, err
+	}
+
+	return &t, nil
 }
