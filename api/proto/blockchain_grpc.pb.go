@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BlockchainClient interface {
 	GetBlockchain(ctx context.Context, in *GetBlockchainRequest, opts ...grpc.CallOption) (*GetBlockchainResponse, error)
+	SendTransaction(ctx context.Context, in *SendTransactionRequest, opts ...grpc.CallOption) (*SendTransactionResponse, error)
 }
 
 type blockchainClient struct {
@@ -37,11 +38,21 @@ func (c *blockchainClient) GetBlockchain(ctx context.Context, in *GetBlockchainR
 	return out, nil
 }
 
+func (c *blockchainClient) SendTransaction(ctx context.Context, in *SendTransactionRequest, opts ...grpc.CallOption) (*SendTransactionResponse, error) {
+	out := new(SendTransactionResponse)
+	err := c.cc.Invoke(ctx, "/proto.Blockchain/SendTransaction", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BlockchainServer is the server API for Blockchain service.
 // All implementations must embed UnimplementedBlockchainServer
 // for forward compatibility
 type BlockchainServer interface {
 	GetBlockchain(context.Context, *GetBlockchainRequest) (*GetBlockchainResponse, error)
+	SendTransaction(context.Context, *SendTransactionRequest) (*SendTransactionResponse, error)
 	mustEmbedUnimplementedBlockchainServer()
 }
 
@@ -51,6 +62,9 @@ type UnimplementedBlockchainServer struct {
 
 func (UnimplementedBlockchainServer) GetBlockchain(context.Context, *GetBlockchainRequest) (*GetBlockchainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlockchain not implemented")
+}
+func (UnimplementedBlockchainServer) SendTransaction(context.Context, *SendTransactionRequest) (*SendTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendTransaction not implemented")
 }
 func (UnimplementedBlockchainServer) mustEmbedUnimplementedBlockchainServer() {}
 
@@ -83,6 +97,24 @@ func _Blockchain_GetBlockchain_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Blockchain_SendTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendTransactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlockchainServer).SendTransaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Blockchain/SendTransaction",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlockchainServer).SendTransaction(ctx, req.(*SendTransactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Blockchain_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.Blockchain",
 	HandlerType: (*BlockchainServer)(nil),
@@ -90,6 +122,10 @@ var _Blockchain_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBlockchain",
 			Handler:    _Blockchain_GetBlockchain_Handler,
+		},
+		{
+			MethodName: "SendTransaction",
+			Handler:    _Blockchain_SendTransaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

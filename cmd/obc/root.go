@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(serverCmd)
-	rootCmd.AddCommand(clientCmd)
+	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(keyCmd)
 	rootCmd.AddCommand(transactionCmd)
 	rootCmd.AddCommand(demoCmd)
