@@ -54,6 +54,7 @@ func (k *Key) Delete() error {
 	return os.Remove(k.Name)
 }
 
+// LoadKey loads the Key from a file path to memory.
 func LoadKey(n string) (*Key, error) {
 	// Only accept keys with the .key extension
 	if n[len(n)-4:] != ".key" {
@@ -71,6 +72,7 @@ func LoadKey(n string) (*Key, error) {
 	}
 }
 
+// PrintPublicAddress prints the public key value from a given key.
 func PrintPublicAddress(k string) (string, error) {
 	key, err := LoadKey(k)
 	if err != nil {

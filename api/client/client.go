@@ -12,6 +12,7 @@ import (
 
 var client proto.BlockchainClient
 
+// GetBlockchain sends a request to the node server for its Blockchain
 func GetBlockchain() {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -38,6 +39,7 @@ func GetBlockchain() {
 	fmt.Println(json)
 }
 
+// SendTransaction sends a transaction to a node server to add it to its pending transactions
 func SendTransaction(t blockchain.Transaction) error {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -65,6 +67,7 @@ func SendTransaction(t blockchain.Transaction) error {
 	return nil
 }
 
+// MineBlock sends a request to the node to mine the next block
 func MineBlock(address string) error {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -78,6 +81,7 @@ func MineBlock(address string) error {
 	return err
 }
 
+// VerifyBlockchain sends a request to the node to verify its blockchain
 func VerifyBlockchain() error {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {

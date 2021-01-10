@@ -39,6 +39,7 @@ type server struct {
 	proto.UnimplementedBlockchainServer
 }
 
+// GetBlockchain sends back a response with the node's current entire Blockchain
 func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchainRequest) (*proto.GetBlockchainResponse, error) {
 	log.Println("Received request for GetBlockchain")
 	resp := new(proto.GetBlockchainResponse)
@@ -77,6 +78,7 @@ func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchain
 	return resp, nil
 }
 
+// SendTransaction accepts an incoming Transaction, verifies the signature and if validated, adds it to its pending Transaction list
 func (s *server) SendTransaction(ctx context.Context, request *proto.SendTransactionRequest) (*proto.SendTransactionResponse, error) {
 	log.Println("Received request for SendTransaction")
 	resp := new(proto.SendTransactionResponse)
@@ -107,6 +109,7 @@ func (s *server) SendTransaction(ctx context.Context, request *proto.SendTransac
 	return resp, nil
 }
 
+// MineBlock starts mining the next block. Credit is given to the owner of the node.
 func (s *server) MineBlock(ctx context.Context, request *proto.MineBlockRequest) (*proto.MineBlockResponse, error) {
 	log.Printf("Received request for MineBlock from Address: %s\n", request.Address)
 	resp := new(proto.MineBlockResponse)
@@ -117,6 +120,7 @@ func (s *server) MineBlock(ctx context.Context, request *proto.MineBlockRequest)
 	return resp, nil
 }
 
+// VerifyBlockchain verifies the integrity of the node's blockchain.
 func (s *server) VerifyBlockchain(ctx context.Context, request *proto.VerifyBlockchainRequest) (*proto.VerifyBlockchainResponse, error) {
 	log.Println("Received request for VerifyBlockchain")
 	resp := new(proto.VerifyBlockchainResponse)

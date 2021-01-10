@@ -87,6 +87,7 @@ func (tx TransactionList) String() string {
 	return string(s)
 }
 
+// SaveTransactionToJSON saves a Transaction to the working directory named transaction.json. Only 1 Transaction can be saved.
 func (t Transaction) SaveTransactionToJSON() error {
 	j, err := json.MarshalIndent(t, "", "    ")
 	if err != nil {
@@ -100,6 +101,7 @@ func (t Transaction) SaveTransactionToJSON() error {
 	return nil
 }
 
+// ReadTransactionFromJSON reads a Transaction from the working directory in transaciotn.json and loads it into memory.
 func ReadTransactionFromJSON() (*Transaction, error) {
 	jsonFile, err := os.Open("transaction.json")
 	if err != nil {
