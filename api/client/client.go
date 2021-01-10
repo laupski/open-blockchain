@@ -3,11 +3,11 @@ package client
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/laupski/open-blockchain/api/proto"
 	"github.com/laupski/open-blockchain/internal/blockchain"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"log"
 )
 
 var client proto.BlockchainClient
@@ -15,7 +15,7 @@ var client proto.BlockchainClient
 func GetBlockchain() {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("cannot dial server: %v", err)
+		fmt.Printf("cannot dial server: %v", err)
 		return
 	}
 	defer conn.Close()
@@ -24,10 +24,18 @@ func GetBlockchain() {
 
 	response, err := client.GetBlockchain(context.Background(), &proto.GetBlockchainRequest{})
 	if err != nil {
-		log.Fatalf("unable to get blockchain: %v", err)
+		fmt.Printf("unable to get blockchain: %v", err)
 	}
 
-	fmt.Println(response)
+	marshaller := jsonpb.Marshaler{
+		EnumsAsInts: false,
+		EmitDefaults: true,
+		Indent: "  ",
+		OrigName: true,
+	}
+
+	json,_ := marshaller.MarshalToString(response)
+	fmt.Println(json)
 }
 
 func SendTransaction(t blockchain.Transaction) error {

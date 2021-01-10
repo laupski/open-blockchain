@@ -28,8 +28,8 @@ func init() {
 	_ = createTransactionCmd.MarkFlagRequired("amount")
 	_ = createTransactionCmd.MarkFlagRequired("key")
 
-	sendTransactionCmd.Flags().StringVarP(&blockchainAddress, "blockchainAddress", "b", "", "The blockchain server address you want to send the transaction to")
-	_ = sendTransactionCmd.MarkFlagRequired("blockchainAddress")
+	//sendTransactionCmd.Flags().StringVarP(&blockchainAddress, "blockchainAddress", "b", "", "The blockchain server address you want to send the transaction to")
+	//_ = sendTransactionCmd.MarkFlagRequired("blockchainAddress")
 }
 
 var ToAddress string
@@ -60,7 +60,7 @@ var createTransactionCmd = &cobra.Command{
 	},
 }
 
-var blockchainAddress string
+//var blockchainAddress string
 var sendTransactionCmd = &cobra.Command{
 	Use:   "send",
 	Short: "Send a transaction to the blockchain server.",
