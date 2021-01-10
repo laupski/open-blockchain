@@ -1,4 +1,8 @@
-all: protoc
+all: build
+
+.PHONY: build
+build:
+	go build -o obc
 
 .PHONY: protoc
 protoc:
