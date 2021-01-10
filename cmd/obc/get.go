@@ -6,27 +6,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var valid = map[string]func() {
-	"blockchain" : client.GetBlockchain,
-}
-
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get information from a blockchain server.",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println("no arguments supplied")
-			return
-		} else if len(args) > 1 {
-			fmt.Println("too many arguments supplied")
-			return
-		}
+}
 
-		function, ok := valid[args[0]]
-		if ok != true {
-			fmt.Println("not a valid option under get")
-		} else {
-			function()
+func init() {
+	getCmd.AddCommand(blockchainGetCmd)
+	getCmd.AddCommand(verifyGetCmd)
+}
+
+var blockchainGetCmd = &cobra.Command{
+	Use:   "blockchain",
+	Short: "Get the current blockchain.",
+	Run: func(cmd *cobra.Command, args []string) {
+		client.GetBlockchain()
+	},
+}
+
+var verifyGetCmd = &cobra.Command{
+	Use:   "verify",
+	Short: "Verify the current blockchain.",
+	Run: func(cmd *cobra.Command, args []string) {
+		err := client.VerifyBlockchain()
+		if err != nil {
+			fmt.Printf("could not verify the blockchain: %v", err)
 		}
 	},
 }

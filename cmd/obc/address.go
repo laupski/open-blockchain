@@ -12,16 +12,13 @@ var addressCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println("must supply a key name")
+			return
 		}
 
 		address, err := blockchain.PrintPublicAddress(args[0])
 		if err != nil {
 			fmt.Printf("unable to read the address of the key: %v", err)
 		}
-		fmt.Printf("Address of %s: %s", args[0], address)
+		fmt.Println(address)
 	},
-}
-
-func init() {
-
 }

@@ -7,6 +7,8 @@ option go_package = "github.com/laupski/open-blockchain;proto";
 service Blockchain {
   rpc GetBlockchain(GetBlockchainRequest) returns (GetBlockchainResponse) {}
   rpc SendTransaction(SendTransactionRequest) returns (SendTransactionResponse) {}
+  rpc MineBlock(MineBlockRequest) returns (MineBlockResponse) {}
+  rpc VerifyBlockchain(VerifyBlockchainRequest) returns (VerifyBlockchainResponse) {}
 }
 
 message BlockChain {
@@ -44,6 +46,16 @@ message SendTransactionResponse {
   string message = 2;
 }
 
-message MineBlockRequest {}
+message MineBlockRequest {
+  string address = 1;
+}
 
-message MineBlockResponse {}
+message MineBlockResponse {
+  string message = 1;
+}
+
+message VerifyBlockchainRequest {}
+
+message VerifyBlockchainResponse {
+  bool verified = 1;
+}

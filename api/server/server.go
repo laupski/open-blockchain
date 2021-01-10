@@ -2,8 +2,10 @@ package server
 
 import (
 	"context"
+	"crypto/ecdsa"
 	"encoding/base64"
 	"fmt"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/laupski/open-blockchain/api/proto"
 	"github.com/laupski/open-blockchain/internal/blockchain"
 	"google.golang.org/grpc"
@@ -11,11 +13,15 @@ import (
 	"net"
 )
 
+var nodeKey *blockchain.Key
+
 func StartApi() {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("unable to listen to port 8080: %v", err)
 	}
+
+	nodeKey, _ = blockchain.NewKey("node.key")
 
 	srv := grpc.NewServer()
 	proto.RegisterBlockchainServer(srv, &server{
@@ -98,5 +104,24 @@ func (s *server) SendTransaction(ctx context.Context, request *proto.SendTransac
 
 	resp.Confirmation = true
 	resp.Message = ""
+	return resp, nil
+}
+
+func (s *server) MineBlock(ctx context.Context, request *proto.MineBlockRequest) (*proto.MineBlockResponse, error) {
+	log.Printf("Received request for MineBlock from Address: %s\n", request.Address)
+	resp := new(proto.MineBlockResponse)
+
+	// Even though we get a request from an address, the node will get credit for mining of the block
+	s.Blockchain.MineTransactions(crypto.FromECDSAPub(nodeKey.Key.Public().(*ecdsa.PublicKey)))
+
+	return resp, nil
+}
+
+func (s *server) VerifyBlockchain(ctx context.Context, request *proto.VerifyBlockchainRequest) (*proto.VerifyBlockchainResponse, error) {
+	log.Println("Received request for VerifyBlockchain")
+	resp := new(proto.VerifyBlockchainResponse)
+
+	resp.Verified = s.Blockchain.Verify()
+
 	return resp, nil
 }

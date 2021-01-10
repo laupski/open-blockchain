@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 type BlockchainClient interface {
 	GetBlockchain(ctx context.Context, in *GetBlockchainRequest, opts ...grpc.CallOption) (*GetBlockchainResponse, error)
 	SendTransaction(ctx context.Context, in *SendTransactionRequest, opts ...grpc.CallOption) (*SendTransactionResponse, error)
+	MineBlock(ctx context.Context, in *MineBlockRequest, opts ...grpc.CallOption) (*MineBlockResponse, error)
+	VerifyBlockchain(ctx context.Context, in *VerifyBlockchainRequest, opts ...grpc.CallOption) (*VerifyBlockchainResponse, error)
 }
 
 type blockchainClient struct {
@@ -47,12 +49,32 @@ func (c *blockchainClient) SendTransaction(ctx context.Context, in *SendTransact
 	return out, nil
 }
 
+func (c *blockchainClient) MineBlock(ctx context.Context, in *MineBlockRequest, opts ...grpc.CallOption) (*MineBlockResponse, error) {
+	out := new(MineBlockResponse)
+	err := c.cc.Invoke(ctx, "/proto.Blockchain/MineBlock", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *blockchainClient) VerifyBlockchain(ctx context.Context, in *VerifyBlockchainRequest, opts ...grpc.CallOption) (*VerifyBlockchainResponse, error) {
+	out := new(VerifyBlockchainResponse)
+	err := c.cc.Invoke(ctx, "/proto.Blockchain/VerifyBlockchain", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BlockchainServer is the server API for Blockchain service.
 // All implementations must embed UnimplementedBlockchainServer
 // for forward compatibility
 type BlockchainServer interface {
 	GetBlockchain(context.Context, *GetBlockchainRequest) (*GetBlockchainResponse, error)
 	SendTransaction(context.Context, *SendTransactionRequest) (*SendTransactionResponse, error)
+	MineBlock(context.Context, *MineBlockRequest) (*MineBlockResponse, error)
+	VerifyBlockchain(context.Context, *VerifyBlockchainRequest) (*VerifyBlockchainResponse, error)
 	mustEmbedUnimplementedBlockchainServer()
 }
 
@@ -65,6 +87,12 @@ func (UnimplementedBlockchainServer) GetBlockchain(context.Context, *GetBlockcha
 }
 func (UnimplementedBlockchainServer) SendTransaction(context.Context, *SendTransactionRequest) (*SendTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendTransaction not implemented")
+}
+func (UnimplementedBlockchainServer) MineBlock(context.Context, *MineBlockRequest) (*MineBlockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MineBlock not implemented")
+}
+func (UnimplementedBlockchainServer) VerifyBlockchain(context.Context, *VerifyBlockchainRequest) (*VerifyBlockchainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyBlockchain not implemented")
 }
 func (UnimplementedBlockchainServer) mustEmbedUnimplementedBlockchainServer() {}
 
@@ -115,6 +143,42 @@ func _Blockchain_SendTransaction_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Blockchain_MineBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MineBlockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlockchainServer).MineBlock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Blockchain/MineBlock",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlockchainServer).MineBlock(ctx, req.(*MineBlockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Blockchain_VerifyBlockchain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyBlockchainRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlockchainServer).VerifyBlockchain(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.Blockchain/VerifyBlockchain",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlockchainServer).VerifyBlockchain(ctx, req.(*VerifyBlockchainRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Blockchain_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.Blockchain",
 	HandlerType: (*BlockchainServer)(nil),
@@ -126,6 +190,14 @@ var _Blockchain_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendTransaction",
 			Handler:    _Blockchain_SendTransaction_Handler,
+		},
+		{
+			MethodName: "MineBlock",
+			Handler:    _Blockchain_MineBlock_Handler,
+		},
+		{
+			MethodName: "VerifyBlockchain",
+			Handler:    _Blockchain_VerifyBlockchain_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

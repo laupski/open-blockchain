@@ -22,6 +22,7 @@ func init() {
 	rootCmd.AddCommand(transactionCmd)
 	rootCmd.AddCommand(demoCmd)
 	rootCmd.AddCommand(addressCmd)
+	rootCmd.AddCommand(mineCmd)
 }
 
 // Execute runs the command line input.
