@@ -19,7 +19,7 @@ func StartApi() {
 
 	srv := grpc.NewServer()
 	proto.RegisterBlockchainServer(srv, &server{
-		Blockchain: blockchain.NewBlockChain(2,100.0),
+		Blockchain: blockchain.NewBlockChain(2, 100.0),
 	})
 	fmt.Println("Running on port 8080, contact me at localhost:8080")
 	err = srv.Serve(listener)
@@ -34,10 +34,11 @@ type server struct {
 }
 
 func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchainRequest) (*proto.GetBlockchainResponse, error) {
+	log.Println("Received request for GetBlockchain")
 	resp := new(proto.GetBlockchainResponse)
 
 	resp.Blockchain = &proto.BlockChain{
-		Difficulty: s.Blockchain.Difficulty,
+		Difficulty:   s.Blockchain.Difficulty,
 		MiningReward: s.Blockchain.MiningReward,
 	}
 
@@ -52,8 +53,8 @@ func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchain
 			tl = append(tl, transaction)
 		}
 		resp.Blockchain.Blocks = append(resp.Blockchain.Blocks, &proto.Block{
-			Hash: base64.StdEncoding.EncodeToString(b.Hash),
-			PrevHash: base64.StdEncoding.EncodeToString(b.PreviousHash),
+			Hash:         base64.StdEncoding.EncodeToString(b.Hash),
+			PrevHash:     base64.StdEncoding.EncodeToString(b.PreviousHash),
 			Transactions: tl,
 		})
 	}
@@ -61,11 +62,41 @@ func (s *server) GetBlockchain(ctx context.Context, request *proto.GetBlockchain
 	for _, t := range s.Blockchain.PendingTransactions {
 		resp.Blockchain.PendingTransactions = append(resp.Blockchain.PendingTransactions, &proto.Transaction{
 			FromAddress: base64.StdEncoding.EncodeToString(t.FromAddress),
-			ToAddress: base64.StdEncoding.EncodeToString(t.ToAddress),
-			Amount: t.Amount,
-			Signature: base64.StdEncoding.EncodeToString(t.Signature),
+			ToAddress:   base64.StdEncoding.EncodeToString(t.ToAddress),
+			Amount:      t.Amount,
+			Signature:   base64.StdEncoding.EncodeToString(t.Signature),
 		})
 	}
 
+	return resp, nil
+}
+
+func (s *server) SendTransaction(ctx context.Context, request *proto.SendTransactionRequest) (*proto.SendTransactionResponse, error) {
+	log.Println("Received request for SendTransaction")
+	resp := new(proto.SendTransactionResponse)
+	t1 := blockchain.Transaction{}
+	t1.FromAddress, _ = base64.StdEncoding.DecodeString(request.Transaction.FromAddress)
+	t1.ToAddress, _ = base64.StdEncoding.DecodeString(request.Transaction.ToAddress)
+	t1.Amount = request.Transaction.Amount
+	t1.Signature, _ = base64.StdEncoding.DecodeString(request.Transaction.Signature)
+
+	v := t1.VerifyTransaction()
+	if v != true {
+		resp.Confirmation = false
+		resp.Message = "transaction could not be verified"
+		return resp, nil
+	}
+	txl := make(blockchain.TransactionList, 0)
+	txl = append(txl, t1)
+
+	err := s.Blockchain.PushTransactions(txl...)
+	if err != nil {
+		resp.Confirmation = false
+		resp.Message = err.Error()
+		return resp, nil
+	}
+
+	resp.Confirmation = true
+	resp.Message = ""
 	return resp, nil
 }

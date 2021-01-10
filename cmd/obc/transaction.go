@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/laupski/open-blockchain/api/client"
 	"github.com/laupski/open-blockchain/internal/blockchain"
 	"github.com/spf13/cobra"
 )
@@ -64,7 +65,17 @@ var sendTransactionCmd = &cobra.Command{
 	Use:   "send",
 	Short: "Send a transaction to the blockchain server.",
 	Run: func(cmd *cobra.Command, args []string) {
+		t, err := blockchain.ReadTransactionFromJSON()
+		if err != nil {
+			fmt.Printf("could not open transaction: %v", err)
+		}
 
+		b := t.VerifyTransaction()
+		if b != true {
+			fmt.Printf("transaction is NOT verified, did not send to blockchainn server")
+		}
+
+		client.SendTransaction(*t)
 	},
 }
 

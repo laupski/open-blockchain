@@ -30,9 +30,3 @@ var getCmd = &cobra.Command{
 		}
 	},
 }
-
-func init() {
-
-}
-
-
