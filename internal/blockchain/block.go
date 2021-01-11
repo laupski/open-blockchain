@@ -2,8 +2,8 @@ package blockchain
 
 import (
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"strings"
 	"time"
@@ -44,7 +44,8 @@ func CalculateHash(data string) []byte {
 
 // MineBlock recalculates the Hash to establish proof of work.
 func (b *Block) MineBlock(d int32) {
-	for fmt.Sprintf("%x", b.Hash)[:d] != strings.Repeat("0", int(d)) {
+	//for fmt.Sprintf("%x", b.Hash)[:d] != strings.Repeat("0", int(d)) {
+	for base64.StdEncoding.EncodeToString(b.Hash)[:d] != strings.Repeat("0", int(d)) {
 		b.nonce++
 		b.Hash = CalculateHash(b.Transactions.String() + b.timestamp.String() + string(rune(b.nonce)))
 	}

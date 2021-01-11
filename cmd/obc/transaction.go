@@ -21,9 +21,9 @@ func init() {
 	transactionCmd.AddCommand(printTransactionCmd)
 	transactionCmd.AddCommand(verifyTransactionCmd)
 
-	createTransactionCmd.Flags().StringVarP(&ToAddress, "toAddress", "t", "", "The address to send the amount (public key)")
-	createTransactionCmd.Flags().Float32VarP(&Amount, "amount", "a", 0, "Amount to send to the address")
-	createTransactionCmd.Flags().StringVarP(&Key, "key", "k", "", "The key to sign the transaction with")
+	createTransactionCmd.Flags().StringVarP(&toAddress, "toAddress", "t", "", "The address to send the amount (public key)")
+	createTransactionCmd.Flags().Float32VarP(&amount, "amount", "a", 0, "Amount to send to the address")
+	createTransactionCmd.Flags().StringVarP(&key, "key", "k", "", "The key to sign the transaction with")
 	_ = createTransactionCmd.MarkFlagRequired("toAddress")
 	_ = createTransactionCmd.MarkFlagRequired("amount")
 	_ = createTransactionCmd.MarkFlagRequired("key")
@@ -32,30 +32,33 @@ func init() {
 	//_ = sendTransactionCmd.MarkFlagRequired("blockchainAddress")
 }
 
-var ToAddress string
-var Amount float32
-var Key string
+var toAddress string
+var amount float32
+var key string
 var createTransactionCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create transactions to send the blockchain server.",
 	Run: func(cmd *cobra.Command, args []string) {
-		key, err := blockchain.LoadKey(Key)
+		key, err := blockchain.LoadKey(key)
 		if err != nil {
-			fmt.Printf("unable to load the key: %v", err)
+			fmt.Printf("Unable to load the key: %v", err)
+			return
 		}
 
 		fromAddress := crypto.FromECDSAPub(key.Key.Public().(*ecdsa.PublicKey))
-		toAddress, _ := base64.StdEncoding.DecodeString(ToAddress)
+		toAddress, _ := base64.StdEncoding.DecodeString(toAddress)
 
-		t := blockchain.NewTransaction(fromAddress, toAddress, Amount)
+		t := blockchain.NewTransaction(fromAddress, toAddress, amount)
 		err = t.SignTransaction(key)
 		if err != nil {
-			fmt.Printf("unable to sign the transaction: %v", err)
+			fmt.Printf("Unable to sign the transaction: %v", err)
+			return
 		}
 
 		err = t.SaveTransactionToJSON()
 		if err != nil {
-			fmt.Printf("unable to save the transaction locally: %v", err)
+			fmt.Printf("Unable to save the transaction locally: %v", err)
+			return
 		}
 	},
 }
@@ -67,15 +70,27 @@ var sendTransactionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		t, err := blockchain.ReadTransactionFromJSON()
 		if err != nil {
-			fmt.Printf("could not open transaction: %v", err)
+			fmt.Printf("Could not open transaction: %v", err)
+			return
 		}
 
 		b := t.VerifyTransaction()
 		if b != true {
-			fmt.Printf("transaction is NOT verified, did not send to blockchainn server")
+			fmt.Printf("Transaction is NOT verified, did not send to blockchainn server")
+			return
 		}
 
-		client.SendTransaction(*t)
+		resp, err := client.SendTransaction(*t)
+		if err != nil {
+			fmt.Printf("Error with sending the transaction: %v", err)
+			return
+		}
+
+		if resp.Confirmation == false {
+			fmt.Println("Unknown error has occurred!")
+		}
+
+		fmt.Println("Transaction was successfully sent to the pending transaction list!")
 	},
 }
 
@@ -86,6 +101,7 @@ var printTransactionCmd = &cobra.Command{
 		t, err := blockchain.ReadTransactionFromJSON()
 		if err != nil {
 			fmt.Printf("could not open transaction: %v", err)
+			return
 		}
 
 		fmt.Println(t)
@@ -98,7 +114,8 @@ var verifyTransactionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		t, err := blockchain.ReadTransactionFromJSON()
 		if err != nil {
-			fmt.Printf("could not open transaction: %v", err)
+			fmt.Printf("could not open transaction: %v\n", err)
+			return
 		}
 
 		b := t.VerifyTransaction()

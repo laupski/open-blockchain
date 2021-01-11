@@ -15,7 +15,7 @@ var demoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		fmt.Println("Creating Blockchain")
-		bc := blockchain.NewBlockChain(4, 100)
+		bc := blockchain.NewBlockChain(2, 100)
 
 		key1, _ := blockchain.NewKey("test1.key")
 		address1 := crypto.FromECDSAPub(key1.Key.Public().(*ecdsa.PublicKey))

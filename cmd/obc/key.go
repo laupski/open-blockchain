@@ -12,7 +12,8 @@ var keyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		_, err := blockchain.NewKey(args[0])
 		if err != nil {
-			fmt.Printf("unable to create key: %v", err)
+			fmt.Printf("unable to create key: %v\n", err)
+			return
 		}
 	},
 }

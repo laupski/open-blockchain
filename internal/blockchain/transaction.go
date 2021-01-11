@@ -111,8 +111,11 @@ func ReadTransactionFromJSON() (*Transaction, error) {
 	defer jsonFile.Close()
 
 	j, err := ioutil.ReadAll(jsonFile)
-	var t Transaction
+	if err != nil {
+		return nil, err
+	}
 
+	var t Transaction
 	err = json.Unmarshal(j, &t)
 	if err != nil {
 		return nil, err

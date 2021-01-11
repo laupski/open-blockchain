@@ -8,12 +8,13 @@ import (
 	"os"
 )
 
+// Key object to handle BlockChain internals.
 type Key struct {
 	Name string
 	Key  *ecdsa.PrivateKey
 }
 
-// NewKey will create a new ECDSA key pair. If one already exists, it will return the current pair.
+// NewKey will create a new ECDSA key pair under Key. If one already exists, it will return the current pair.
 // Working directory is current directory.
 func NewKey(n string) (*Key, error) {
 
@@ -62,14 +63,14 @@ func LoadKey(n string) (*Key, error) {
 	}
 
 	key, err := loadKey(n)
-	if err == nil {
-		return &Key{
-			Name: n,
-			Key:  key,
-		}, nil
-	} else {
+	if err != nil {
 		return nil, err
 	}
+
+	return &Key{
+		Name: n,
+		Key:  key,
+	}, nil
 }
 
 // PrintPublicAddress prints the public key value from a given key.
