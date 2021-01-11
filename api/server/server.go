@@ -15,18 +15,20 @@ import (
 
 var nodeKey *blockchain.Key
 
-func StartApi() {
-	listener, err := net.Listen("tcp", ":8080")
+// StartAPI starts a listening gRPC server.
+func StartAPI(port string, difficulty int, reward float32) {
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		log.Fatalf("unable to listen to port 8080: %v", err)
+		log.Fatalf("unable to listen to port %s: %v\n", port, err)
 	}
 
 	nodeKey, _ = blockchain.NewKey("node.key")
 
 	srv := grpc.NewServer()
 	proto.RegisterBlockchainServer(srv, &server{
-		Blockchain: blockchain.NewBlockChain(2, 100.0),
+		Blockchain: blockchain.NewBlockChain(int32(difficulty), reward),
 	})
+	fmt.Printf("Creating blockchain with difficulty of %v and mining reward of %f\n", difficulty, reward)
 	fmt.Println("Running on port 8080, contact me at localhost:8080")
 	err = srv.Serve(listener)
 	if err != nil {

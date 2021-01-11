@@ -17,7 +17,8 @@ var addressCmd = &cobra.Command{
 
 		address, err := blockchain.PrintPublicAddress(args[0])
 		if err != nil {
-			fmt.Printf("unable to read the address of the key: %v", err)
+			fmt.Printf("unable to read the address of the key: %v\n", err)
+			return
 		}
 		fmt.Println(address)
 	},

@@ -132,3 +132,4 @@ fabric.properties
 open-blockchain
 *.key
 transaction.json
+/obc

@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/base64"
-	"fmt"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/laupski/open-blockchain/api/proto"
 	"github.com/laupski/open-blockchain/internal/blockchain"
@@ -10,40 +9,33 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Marshaller default for the client.
+var Marshaller = jsonpb.Marshaler{
+	EnumsAsInts:  false,
+	EmitDefaults: true,
+	Indent:       "  ",
+	OrigName:     true,
+}
 var client proto.BlockchainClient
 
 // GetBlockchain sends a request to the node server for its Blockchain
-func GetBlockchain() {
+func GetBlockchain() (*proto.GetBlockchainResponse, error) {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		fmt.Printf("cannot dial server: %v", err)
-		return
+		return nil, err
 	}
 	defer conn.Close()
 
 	client = proto.NewBlockchainClient(conn)
 
-	response, err := client.GetBlockchain(context.Background(), &proto.GetBlockchainRequest{})
-	if err != nil {
-		fmt.Printf("unable to get blockchain: %v", err)
-	}
-
-	marshaller := jsonpb.Marshaler{
-		EnumsAsInts: false,
-		EmitDefaults: true,
-		Indent: "  ",
-		OrigName: true,
-	}
-
-	json,_ := marshaller.MarshalToString(response)
-	fmt.Println(json)
+	return client.GetBlockchain(context.Background(), &proto.GetBlockchainRequest{})
 }
 
 // SendTransaction sends a transaction to a node server to add it to its pending transactions
-func SendTransaction(t blockchain.Transaction) error {
+func SendTransaction(t blockchain.Transaction) (*proto.SendTransactionResponse, error) {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
@@ -55,46 +47,30 @@ func SendTransaction(t blockchain.Transaction) error {
 		Signature:   base64.StdEncoding.EncodeToString(t.Signature),
 	}
 	str := proto.SendTransactionRequest{Transaction: &pt}
-	resp, err := client.SendTransaction(context.Background(), &str)
-	if err != nil {
-		return err
-	}
-	if resp.Confirmation == true {
-		fmt.Println("Successfully sent response to the server and added to pending transaction list!")
-	} else {
-		fmt.Printf("Unsuccessful attempt to send the transaction to the server: %s", resp.Message)
-	}
-	return nil
+	return client.SendTransaction(context.Background(), &str)
 }
 
 // MineBlock sends a request to the node to mine the next block
-func MineBlock(address string) error {
+func MineBlock(address string) (*proto.MineBlockResponse, error) {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
 	client = proto.NewBlockchainClient(conn)
 	mbr := proto.MineBlockRequest{Address: address}
-	_, err = client.MineBlock(context.Background(), &mbr)
-	return err
+	return client.MineBlock(context.Background(), &mbr)
 }
 
 // VerifyBlockchain sends a request to the node to verify its blockchain
-func VerifyBlockchain() error {
+func VerifyBlockchain() (*proto.VerifyBlockchainResponse, error) {
 	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer conn.Close()
 
 	client = proto.NewBlockchainClient(conn)
-	resp, err := client.VerifyBlockchain(context.Background(), &proto.VerifyBlockchainRequest{})
-	if err != nil {
-		fmt.Printf("could not verify ")
-	}
-
-	fmt.Println(resp.Verified)
-	return err
+	return client.VerifyBlockchain(context.Background(), &proto.VerifyBlockchainRequest{})
 }
