@@ -22,6 +22,6 @@ var mineCmd = &cobra.Command{
 }
 
 func init() {
-	mineCmd.Flags().StringVarP(&requestAddress, "requestAddress", "r", "", "Your address to send the request. Note: You will note receive credit for mining, the node will.")
+	mineCmd.Flags().StringVarP(&requestAddress, "requestAddress", "r", "", "Your address to send the request. Note: You will note receive credit for mining, the node will. (required)")
 	_ = mineCmd.MarkFlagRequired("requestAddress")
 }

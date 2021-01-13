@@ -42,7 +42,7 @@ var verifyGetCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		resp, err := client.VerifyBlockchain()
 		if err != nil {
-			fmt.Printf("could not verify the blockchain: %v\n", err)
+			fmt.Printf("Could not verify the blockchain: %v\n", err)
 			return
 		}
 

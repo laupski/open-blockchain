@@ -21,9 +21,9 @@ func init() {
 	transactionCmd.AddCommand(printTransactionCmd)
 	transactionCmd.AddCommand(verifyTransactionCmd)
 
-	createTransactionCmd.Flags().StringVarP(&toAddress, "toAddress", "t", "", "The address to send the amount (public key)")
-	createTransactionCmd.Flags().Float32VarP(&amount, "amount", "a", 0, "Amount to send to the address")
-	createTransactionCmd.Flags().StringVarP(&key, "key", "k", "", "The key to sign the transaction with")
+	createTransactionCmd.Flags().StringVarP(&toAddress, "toAddress", "t", "", "The address to send the amount (public key). (required)")
+	createTransactionCmd.Flags().Float32VarP(&amount, "amount", "a", 0, "Amount to send to the address. (required)")
+	createTransactionCmd.Flags().StringVarP(&key, "key", "k", "", "The key to sign the transaction with. (required)")
 	_ = createTransactionCmd.MarkFlagRequired("toAddress")
 	_ = createTransactionCmd.MarkFlagRequired("amount")
 	_ = createTransactionCmd.MarkFlagRequired("key")
@@ -114,15 +114,15 @@ var verifyTransactionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		t, err := blockchain.ReadTransactionFromJSON()
 		if err != nil {
-			fmt.Printf("could not open transaction: %v\n", err)
+			fmt.Printf("Could not open transaction: %v\n", err)
 			return
 		}
 
 		b := t.VerifyTransaction()
 		if b == true {
-			fmt.Printf("transaction is verified!\n")
+			fmt.Printf("Transaction is verified!\n")
 		} else {
-			fmt.Printf("transaction is NOT verified\n")
+			fmt.Printf("Transaction is NOT verified\n")
 		}
 	},
 }
