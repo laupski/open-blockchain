@@ -21,9 +21,9 @@ func init() {
 	transactionCmd.AddCommand(printTransactionCmd)
 	transactionCmd.AddCommand(verifyTransactionCmd)
 
-	createTransactionCmd.Flags().StringVarP(&toAddress, "toAddress", "t", "", "The address to send the amount (public key)")
-	createTransactionCmd.Flags().Float32VarP(&amount, "amount", "a", 0, "Amount to send to the address")
-	createTransactionCmd.Flags().StringVarP(&key, "key", "k", "", "The key to sign the transaction with")
+	createTransactionCmd.Flags().StringVarP(&toAddress, "toAddress", "t", "", "The address to send the amount (public key). (required)")
+	createTransactionCmd.Flags().Float32VarP(&amount, "amount", "a", 0, "Amount to send to the address. (required)")
+	createTransactionCmd.Flags().StringVarP(&key, "key", "k", "", "The key to sign the transaction with. (required)")
 	_ = createTransactionCmd.MarkFlagRequired("toAddress")
 	_ = createTransactionCmd.MarkFlagRequired("amount")
 	_ = createTransactionCmd.MarkFlagRequired("key")
