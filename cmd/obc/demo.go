@@ -11,7 +11,7 @@ import (
 
 var demoCmd = &cobra.Command{
 	Use:   "demo",
-	Short: "a demo run of a blockchain",
+	Short: "A demo run of a blockchain",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		fmt.Println("Creating Blockchain")

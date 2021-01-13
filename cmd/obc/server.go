@@ -35,7 +35,7 @@ var serverCmd = &cobra.Command{
 }
 
 func init() {
-	serverCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port to start the blockchain server on.")
+	serverCmd.Flags().IntVarP(&port, "port", "p", 8080, "Port to start the blockchain server on. (required)")
 	serverCmd.Flags().IntVarP(&difficulty, "difficulty", "d", 2, "Difficulty to start the blockchain with.")
 	serverCmd.Flags().Float32VarP(&reward, "reward", "r", 100.0, "Reward to set the blockchain with.")
 	_ = serverCmd.MarkFlagRequired("port")

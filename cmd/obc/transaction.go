@@ -114,15 +114,15 @@ var verifyTransactionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		t, err := blockchain.ReadTransactionFromJSON()
 		if err != nil {
-			fmt.Printf("could not open transaction: %v\n", err)
+			fmt.Printf("Could not open transaction: %v\n", err)
 			return
 		}
 
 		b := t.VerifyTransaction()
 		if b == true {
-			fmt.Printf("transaction is verified!\n")
+			fmt.Printf("Transaction is verified!\n")
 		} else {
-			fmt.Printf("transaction is NOT verified\n")
+			fmt.Printf("Transaction is NOT verified\n")
 		}
 	},
 }
